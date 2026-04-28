@@ -1,0 +1,139 @@
+<?php
+$hasil = null;
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $alas = $_POST["alas"];
+    $tinggi = $_POST["tinggi"];
+    $jenis = $_POST["jenis"];
+
+    $luas = 0.5 * $alas * $tinggi;
+
+    if ($jenis == "siku") {
+        $sisi_miring = sqrt(($alas * $alas) + ($tinggi * $tinggi));
+        $hasil = [
+            "jenis" => "Segitiga Siku-Siku",
+            "alas" => $alas,
+            "tinggi" => $tinggi,
+            "luas" => $luas,
+            "info" => "Sisi Miring: " . round($sisi_miring, 2)
+        ];
+    } else {
+        $sisi_kaki = sqrt(pow($alas / 2, 2) + pow($tinggi, 2));
+        $keliling = $alas + (2 * $sisi_kaki);
+
+        $hasil = [
+            "jenis" => "Segitiga Sama Kaki",
+            "alas" => $alas,
+            "tinggi" => $tinggi,
+            "luas" => $luas,
+            "info" => "Keliling: " . round($keliling, 2)
+        ];
+    }
+}
+?>
+
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Kalkulator Segitiga</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #f4f6f9;
+    padding: 30px;
+}
+
+.container {
+    max-width: 500px;
+    margin: auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+}
+
+.hasil {
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.card {
+    margin-top: 20px;
+    padding: 15px;
+    background: #4CAF50;
+    color: white;
+    border-radius: 10px;
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+    <h2>Kalkulator Segitiga</h2>
+
+    <form method="POST">
+        <input type="number" id="alas" name="alas" placeholder="Masukkan Alas" required>
+        <input type="number" id="tinggi" name="tinggi" placeholder="Masukkan Tinggi" required>
+
+        <select id="jenis" name="jenis">
+            <option value="siku">Siku-Siku</option>
+            <option value="sama">Sama Kaki</option>
+        </select>
+
+        <div class="hasil">
+            Luas: <span id="luas">0</span><br>
+            <span id="tambahan"></span>
+        </div>
+
+        <button type="submit">Simpan Hasil</button>
+    </form>
+
+    <?php if ($hasil): ?>
+        <div class="card">
+            <h3><?= $hasil["jenis"]; ?></h3>
+            <p>Alas: <?= $hasil["alas"]; ?></p>
+            <p>Tinggi: <?= $hasil["tinggi"]; ?></p>
+            <p>Luas: <?= round($hasil["luas"], 2); ?></p>
+            <p><?= $hasil["info"]; ?></p>
+        </div>
+    <?php endif; ?>
+</div>
+
+<script>
+function hitung() {
+    let alas = parseFloat(document.getElementById("alas").value) || 0;
+    let tinggi = parseFloat(document.getElementById("tinggi").value) || 0;
+    let jenis = document.getElementById("jenis").value;
+
+    let luas = 0.5 * alas * tinggi;
+    document.getElementById("luas").innerText = luas.toFixed(2);
+
+    let tambahan = "";
+
+    if (jenis === "siku") {
+        let sisiMiring = Math.sqrt((alas * alas) + (tinggi * tinggi));
+        tambahan = "Sisi Miring: " + sisiMiring.toFixed(2);
+    } else {
+        let sisiKaki = Math.sqrt(Math.pow(alas / 2, 2) + Math.pow(tinggi, 2));
+        let keliling = alas + (2 * sisiKaki);
+        tambahan = "Keliling: " + keliling.toFixed(2);
+    }
+
+    document.getElementById("tambahan").innerText = tambahan;
+}
+
+document.getElementById("alas").addEventListener("input", hitung);
+document.getElementById("tinggi").addEventListener("input", hitung);
+document.getElementById("jenis").addEventListener("change", hitung);
+</script>
+
+</body>
+</html>
